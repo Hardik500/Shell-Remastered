@@ -7,13 +7,26 @@
 #include <dirent.h>
 #include <sys/stat.h>
 #include <regex.h>
+#include <limits.h>
 
 //variables and fuctions required for list command
 struct stat s;
 
+//Declaring Current Working Directory
+char *getcwd(char *buf, size_t size);
+
+//Regular expression for getting all the files which follows the syntax * or **
 regex_t regex;
 const char *expression = "^[.]*$";
 int reti;
+
+//File pointer for storing the name and content of copy, paste function
+FILE *fptr1;
+char filename[100];
+int charData;
+char filearray[1000][1000];
+char fileNamearray[1000][1000];
+int counter = 0;
 
 //Directory listing main loop
 int listDirectory(int counter, int level, char arr[200], char space[100])
@@ -130,12 +143,15 @@ int listDirectory(int counter, int level, char arr[200], char space[100])
   }
   closedir(dr);
 }
+
 /*
   Function Declarations for builtin shell commands:
  */
 int lsh_autoftp(char **args);
 int lsh_cd(char **args);
 int lsh_help(char **args);
+int lsh_copy(char **args);
+int lsh_paste(char **args);
 int lsh_exit(char **args);
 int lsh_list(char **args);
 /*
@@ -146,14 +162,18 @@ char *builtin_str[] = {
     "cd",
     "help",
     "exit",
-    "list"};
+    "list",
+    "copy",
+    "paste"};
 
 int (*builtin_func[])(char **) = {
     &lsh_autoftp,
     &lsh_cd,
     &lsh_help,
     &lsh_exit,
-    &lsh_list};
+    &lsh_list,
+    &lsh_copy,
+    &lsh_paste};
 
 int lsh_num_builtins()
 {
@@ -165,9 +185,9 @@ int lsh_num_builtins()
 */
 
 /**
-  @brief Bultin command: change directory.
-  @param args List of args. two arguments args[0] is "cd".  args[1] is the directory.
-  @return Always returns 1, to continue executing.
+   @brief Bultin command: change directory.
+   @param args List of args. two arguments args[0] is "cd".  args[1] is the directory.
+   @return Always returns 1, to continue executing.
  */
 int lsh_cd(char **args)
 {
@@ -186,9 +206,9 @@ int lsh_cd(char **args)
 }
 
 /**
-  @brief Builtin command: print help.
-  @param args List of args. only args[0]=help.
-  @return Always returns 1, to continue executing.
+   @brief Builtin command: print help.
+   @param args List of args. only args[0]=help.
+   @return Always returns 1, to continue executing.
  */
 int lsh_help(char **args)
 {
@@ -207,34 +227,36 @@ int lsh_help(char **args)
 }
 
 /**
-  @brief Builtin command: exit.
-  @param args List of args.  only args[0]=exit.
-  @return Always returns 0, to terminate execution.
+   @brief Builtin command: exit.
+   @param args List of args.  only args[0]=exit.
+   @return Always returns 0, to terminate execution.
  */
 int lsh_exit(char **args)
 {
   return 0;
 }
 /**
-  @brief Bultin command: list files.
-  @param args List of args. only args[0] is "list"
-  @return Always returns 1, to continue executing.
+   @brief Bultin command: list files.
+   @param args List of args. only args[0] is "list"
+   @return Always returns 1, to continue executing.
  */
-
-//Code for directory listing
 int lsh_list(char **args)
 {
-  //This is the root directory
-  char arr[200] = ".";
-
   if (args[1] == NULL)
   {
-    fprintf(stderr, "lsh: expected argument to \"list\" e.g. list 1\n");
+    fprintf(stderr, "lsh: expected argument to \"list\" eg. list 1\n");
   }
   else
   {
-    //Get the level from the argument
+
+    //This is the root directory
+    char arr[200] = ".";
+
+    //Declare level
     int level = atoi(args[1]);
+
+    //Get the level from the user
+    scanf("%d", &level);
 
     //Compile the regular expression
     reti = regcomp(&regex, expression, 0);
@@ -245,34 +267,26 @@ int lsh_list(char **args)
 
     //Go into the main loop
     listDirectory(0, level, arr, "");
-
-    return 1;
   }
+  return 1;
 }
 /**
-  @brief Bultin command: change directory.
-  @param args List of args. only args[0] is "autoftp".
-  @return Always returns 1, to continue executing.
+   @brief Bultin command: change directory.
+   @param args List of args. only args[0] is "autoftp".
+   @return Always returns 1, to continue executing.
  */
 
-// Code for autoftp
 int lsh_autoftp(char **args)
 {
-  //File Pointerr for the bash script
-  FILE *ftpFile;
-
-  //Open the file in read mode
-  ftpFile = popen("./f.sh", "r");
-
-  if (ftpFile != NULL)
+  FILE *pp;
+  pp = popen("./f.sh", "r");
+  if (pp != NULL)
   {
     while (1)
     {
       char *line;
       char buf[1000];
-
-      //Get each line
-      line = fgets(buf, sizeof buf, ftpFile);
+      line = fgets(buf, sizeof buf, pp);
       if (line == NULL)
       {
         break;
@@ -280,9 +294,104 @@ int lsh_autoftp(char **args)
       else
         printf("%s", line);
     }
+    pclose(pp);
+  }
+  return 1;
+}
+/**
+  @brief Launch a program and wait for it to terminate.
+  @param args Null terminated list of arguments (including program).
+  @return Always returns 1, to continue execution.
+ */
+int lsh_copy(char **args)
+{
+  char cwd[FILENAME_MAX];
+  if (getcwd(cwd, sizeof(cwd)) != NULL)
+  {
+    //  printf("Current working dir: %s\n", cwd);
+  }
+  else
+  {
+    //  perror("getcwd() error");
+  }
 
-    //Close the pointer
-    pclose(ftpFile);
+  if (args[1] == NULL)
+  {
+    fprintf(stderr, "lsh: expected argument to \"copy\"\n");
+  }
+
+  int count = 0;
+  while (args[++count] != NULL)
+    ;
+  count -= 1;
+  int uniqueCounter = 1;
+
+  while (uniqueCounter <= count)
+  {
+    strcpy(filename, args[uniqueCounter]);
+    strcpy(fileNamearray[counter], filename);
+
+    char filePath[sizeof(cwd) + 1 + sizeof(filename) + 1];
+    strcpy(filePath, cwd);
+    strcat(filePath, "/");
+    strcat(filePath, filename);
+    strcat(filePath, "\0");
+    printf("%s\n", filePath);
+
+    strcpy(filearray[counter], filePath);
+    counter += 1;
+    uniqueCounter += 1;
+  }
+  return 1;
+
+  // while(1){
+  // 	printf("Enter the filename to open for reading. Press \"quit\" to exit from reading \n");
+  // 	scanf("%s", filename);
+  //    strcpy(fileNamearray[counter], filename);
+
+  //    char filePath[sizeof(cwd) + 1 +sizeof(filename) + 1];
+  // 	strcpy(filePath,cwd);
+  // 	strcat(filePath,"/");
+  // 	strcat(filePath,filename);
+  // 	strcat(filePath,"\0");
+  // 	printf("%s\n",filePath);
+
+  // 	if (strcmp(filename,"quit") == 0)
+  // 	{
+  // 		break;
+
+  // 		printf("Cannot open file %s \n", filename);
+  // 		exit(0);
+  // 	}
+
+  // 	strcpy(filearray[counter], filePath);
+  // 	counter+=1;
+  // }
+  //  return 1;
+}
+/**
+  @brief Launch a program and wait for it to terminate.
+  @param args Null terminated list of arguments (including program).
+  @return Always returns 1, to continue execution.
+ */
+int lsh_paste(char **args)
+{
+  for (int i = 0; i < counter; i++)
+  {
+    printf("%s %s\n", filearray[i], filearray[i]);
+
+    fptr1 = fopen(fileNamearray[i], "w");
+
+    // Read contents from file
+    FILE *fptr = fopen(filearray[i], "r");
+    charData = fgetc(fptr1);
+    while ((charData = fgetc(fptr)) != EOF)
+    {
+      fputc(charData, fptr1);
+    }
+
+    fclose(fptr1);
+    printf("\nContents copied to %s\n", filearray[i]);
   }
   return 1;
 }
@@ -319,15 +428,15 @@ int lsh_launch(char **args)
       waitpid(pid, &status, WUNTRACED);
     } while (!WIFEXITED(status) && !WIFSIGNALED(status));
   }
+
   return 1;
 }
 
 /**
-  @brief Execute shell built-in or launch program.
-  @param args Null terminated list of arguments.
-  @return 1 if the shell should continue running, 0 if it should terminate
-*/
-
+   @brief Execute shell built-in or launch program.
+   @param args Null terminated list of arguments.
+   @return 1 if the shell should continue running, 0 if it should terminate
+ */
 int lsh_execute(char **args)
 {
   int i;
@@ -351,8 +460,8 @@ int lsh_execute(char **args)
 
 #define LSH_RL_BUFSIZE 1024
 /**
-  @brief Read a line of input from stdin.
-  @return The line from stdin.
+   @brief Read a line of input from stdin.
+   @return The line from stdin.
  */
 char *lsh_read_line(void)
 {
@@ -404,9 +513,9 @@ char *lsh_read_line(void)
 #define LSH_TOK_BUFSIZE 64
 #define LSH_TOK_DELIM " \t\r\n\a"
 /**
-  @brief Split a line into tokens (very naively).
-  @param line The line.
-  @return Null-terminated array of tokens.
+   @brief Split a line into tokens (very naively).
+   @param line The line.
+   @return Null-terminated array of tokens.
  */
 char **lsh_split_line(char *line)
 {
@@ -446,7 +555,7 @@ char **lsh_split_line(char *line)
 }
 
 /**
-  @brief Loop getting input and executing it.
+   @brief Loop getting input and executing it.
  */
 void lsh_loop(void)
 {
@@ -467,10 +576,10 @@ void lsh_loop(void)
 }
 
 /**
-  @brief Main entry point.
-  @param argc Argument count.
-  @param argv Argument vector.
-  @return status code
+   @brief Main entry point.
+   @param argc Argument count.
+   @param argv Argument vector.
+   @return status code
  */
 int main(int argc, char **argv)
 {
