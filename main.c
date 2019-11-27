@@ -242,32 +242,26 @@ int lsh_exit(char **args)
  */
 int lsh_list(char **args)
 {
-  if (args[1] == NULL)
+  //This is the root directory
+  char arr[200] = ".";
+
+  //Declare level
+  int level = atoi(args[1]);
+  // printf("Enter the level to which you want to list files: ");
+
+  //Get the level from the user
+  // scanf("%d", &level);
+
+  //Compile the regular expression
+  reti = regcomp(&regex, expression, 0);
+  if (reti)
   {
-    fprintf(stderr, "lsh: expected argument to \"list\" eg. list 1\n");
+    fprintf(stderr, "Could not compile regex\n");
   }
-  else
-  {
 
-    //This is the root directory
-    char arr[200] = ".";
+  //Go into the main loop
+  listDirectory(0, level, arr, "");
 
-    //Declare level
-    int level = atoi(args[1]);
-
-    //Get the level from the user
-    scanf("%d", &level);
-
-    //Compile the regular expression
-    reti = regcomp(&regex, expression, 0);
-    if (reti)
-    {
-      fprintf(stderr, "Could not compile regex\n");
-    }
-
-    //Go into the main loop
-    listDirectory(0, level, arr, "");
-  }
   return 1;
 }
 /**
