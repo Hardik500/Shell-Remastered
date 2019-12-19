@@ -1,4 +1,5 @@
 #!/bin/bash
+mkdir Testing
 HOST=ftp.cesca.es
 USER=anonymous
 PASSWORD=P@ssw0rd
@@ -8,7 +9,7 @@ pass
 ls
 cd ubuntu
 cd release
-cd $PWD/Testing
+lcd $PWD/Testing
 get robots.txt
 bye
 EOF
