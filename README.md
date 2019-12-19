@@ -2,14 +2,14 @@
 A modified version of Linux shell with basic implementation and some new functionalities
 
 ## Utilities Added
-* Copying and Pasting Multiple Files
-* Simple Classification of Files
-* Automation of File Trasfer Protocol
-* Listing of files in a tree structure
+* [Copying and Pasting Multiple Files](https://github.com/Hardik500/Shell-Remastered#copying-and-pasting-multiple-files)
+* [Simple Classification of Files](https://github.com/Hardik500/Shell-Remastered#simple-classification-of-files)
+* [Automation of File Trasfer Protocol](https://github.com/Hardik500/Shell-Remastered#automation-of-file-trasfer-protocol)
+* [Listing of files in a tree structure](https://github.com/Hardik500/Shell-Remastered#listing-of-files-in-a-tree-structure)
 
 ## Usage
 
-### Copying and Pasting Multiple Files
+### Copying and Pasting Multiple files
 
 #### Command
 `copy [file-name]` & `paste`
@@ -22,7 +22,7 @@ It can be a single file or a group of files.
 
 Then go to a the directory on which you want to paste and enter the `paste` command.
 
-### Simple Classification of Files
+### Simple Classification of files
         
 #### Command
 `classify [file-name]`
