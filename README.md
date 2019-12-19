@@ -8,6 +8,22 @@ A modified version of Linux shell with basic implementation and some new functio
 * [Listing of files in a tree structure](https://github.com/Hardik500/Shell-Remastered#listing-of-files-in-a-tree-structure)
 
 ## Usage
+
+1. Clone the repo using the command
+        
+    Command : `git clone https://github.com/Hardik500/Shell-Remastered.git`
+
+2. Then in your terminal compile the `main.c` file using either `gcc` or `make` command
+
+    Command : `gcc main.c -o main`
+
+3. Then run the program
+
+    Command : `./main`
+
+>**Note** : Only Linux OS is supported
+
+## Utilities Usage
 ******
 ### Copying and Pasting Multiple files
 
@@ -37,6 +53,8 @@ If the file content matches to that of the files (academic.txt, automobile.txt, 
 If the weights are equal then it will display "file cannot be classified".
 
 eg. Try runing : `classify demo_fc.txt`
+
+>**Note** : Before running this command create three folders named: academic, automobile and financial in the root directory of the project
 
 ******
 
