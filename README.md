@@ -8,7 +8,7 @@ A modified version of Linux shell with basic implementation and some new functio
 * [Listing of files in a tree structure](https://github.com/Hardik500/Shell-Remastered#listing-of-files-in-a-tree-structure)
 
 ## Usage
-
+******
 ### Copying and Pasting Multiple files
 
 #### Command
@@ -21,6 +21,8 @@ With the `copy` command just enter the name of the files which you want to copy.
 It can be a single file or a group of files.
 
 Then go to a the directory on which you want to paste and enter the `paste` command.
+
+******
 
 ### Simple Classification of files
         
@@ -36,6 +38,8 @@ If the weights are equal then it will display "file cannot be classified".
 
 eg. Try runing : `classify demo_fc.txt`
 
+******
+
 ### Automation of File Trasfer Protocol
 
 #### Command
@@ -46,6 +50,8 @@ eg. Try runing : `classify demo_fc.txt`
 Just run the `autoftp` command and it will get the file for which the name you have set in the bash script i.e. `f.sh`.
 
 >**Warning**: Before running this command modify the bash script according to your preference.
+
+******
 
 ### Listing of files in a tree structure
 
