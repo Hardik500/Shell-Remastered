@@ -8,6 +8,202 @@
 #include <sys/stat.h>
 #include <regex.h>
 #include <limits.h>
+#include <ctype.h>
+
+#define SIZE 20
+
+//variables and functions required for classify command
+struct DataItem {
+  char data[50];   
+  int key;
+};
+
+struct DataItem* hashArray[SIZE]; 
+struct DataItem* hashArraya[SIZE]; 
+struct DataItem* hashArrayf[SIZE]; 
+struct DataItem* hashArrayau[SIZE];
+struct DataItem* item;
+struct DataItem* aca;
+struct DataItem* fin;
+struct DataItem* autom;    
+
+int hashCode(int key){
+  return key % SIZE;
+}
+
+
+struct DataItem *search(int key){               
+  
+  //get the hashindex for given key value 
+  int hashIndex = hashCode(key);  
+    	
+  //move in array until an empty 
+  while(hashArray[hashIndex] != NULL){
+    if(hashArray[hashIndex]->key == key)
+      return hashArray[hashIndex]; 
+    			
+    //go to next cell
+    ++hashIndex;
+    		
+    //wrap around the table
+    hashIndex %= SIZE;
+  }        
+    	
+  return NULL;        
+}
+     
+void insert(int key,char* data){
+
+  struct DataItem *item = (struct DataItem*) malloc(sizeof(struct DataItem));
+  strcpy(item->data,data);  
+  item->key = key;     
+     
+  //get the hashindex 
+  int hashIndex = hashCode(key);
+     
+  //move in array until an empty or deleted cell
+  while(hashArray[hashIndex] != NULL && hashArray[hashIndex]->key != -1){
+    //go to next cell
+    ++hashIndex;
+    		
+    //wrap around the table
+    hashIndex %= SIZE;
+  }
+    	
+  hashArray[hashIndex] = item;        
+}
+
+struct DataItem *searcha(int key){               
+  //get the hashindex for given key value 
+  int hashIndex = hashCode(key);  
+    	
+  //move in array until an empty 
+  while(hashArraya[hashIndex] != NULL){
+    	
+    if(hashArraya[hashIndex]->key == key)
+      return hashArraya[hashIndex]; 
+    			
+    //go to next cell
+    ++hashIndex;
+    		
+    //wrap around the table
+    hashIndex %= SIZE;
+  }        
+    	
+  return NULL;        
+}
+
+struct DataItem *searchf(int key){               
+
+  //get the hashindex for given key value 
+  int hashIndex = hashCode(key);  
+   	
+  //move in array until an empty 
+  while(hashArrayf[hashIndex] != NULL){
+    	
+    if(hashArrayf[hashIndex]->key == key)
+      return hashArrayf[hashIndex]; 
+    			
+    //go to next cell
+    ++hashIndex;
+    		
+    //wrap around the table
+    hashIndex %= SIZE;
+  }        
+    	
+  return NULL;        
+}
+
+struct DataItem *searchau(int key){               
+  //get the hashindex for given key value 
+  int hashIndex = hashCode(key);  
+    	
+  //move in array until an empty 
+  while(hashArrayau[hashIndex] != NULL){
+    	
+    if(hashArrayau[hashIndex]->key == key)
+       return hashArrayau[hashIndex]; 
+    			
+    //go to next cell
+    ++hashIndex;
+    		
+    //wrap around the table
+    hashIndex %= SIZE;
+  }        
+    	
+  return NULL;        
+}
+
+void inserta(int key,char* data){
+  struct DataItem *item = (struct DataItem*) malloc(sizeof(struct DataItem));
+  strcpy(item->data,data);  
+  item->key = key;     
+     
+  //get the hashindex 
+  int hashIndex = hashCode(key);
+  
+  //move in array until an empty or deleted cell
+  while(hashArraya[hashIndex] != NULL && hashArraya[hashIndex]->key != -1){
+    //go to next cell
+    ++hashIndex;
+    		
+    //wrap around the table
+    hashIndex %= SIZE;
+  }
+    	
+  hashArraya[hashIndex] = item;        
+}
+
+void insertf(int key,char* data){
+  struct DataItem *item = (struct DataItem*) malloc(sizeof(struct DataItem));
+  strcpy(item->data,data);  
+  item->key = key;     
+     
+  //get the hashindex 
+  int hashIndex = hashCode(key);
+  
+  //move in array until an empty or deleted cell
+  while(hashArrayf[hashIndex] != NULL && hashArrayf[hashIndex]->key != -1){
+    //go to next cell
+    ++hashIndex;
+    		
+    //wrap around the table
+    hashIndex %= SIZE;
+  }
+    	
+  hashArrayf[hashIndex] = item;        
+}
+
+void insertau(int key,char* data){
+  struct DataItem *item = (struct DataItem*) malloc(sizeof(struct DataItem));
+  strcpy(item->data,data);  
+  item->key = key;     
+     
+  //get the hashindex 
+  int hashIndex = hashCode(key);
+     
+  //move in array until an empty or deleted cell
+  while(hashArrayau[hashIndex] != NULL && hashArrayau[hashIndex]->key != -1){
+    //go to next cell
+    ++hashIndex;
+    		
+    //wrap around the table
+    hashIndex %= SIZE;
+  }
+    	
+  hashArrayau[hashIndex] = item;        
+}
+
+int strcmpi(char* s1, char* s2){
+  int i;
+  if(strlen(s1)!=strlen(s2))
+    return -1;
+  for(i=0;i<strlen(s1);i++){
+    if(toupper(s1[i])!=toupper(s2[i]))
+      return s1[i]-s2[i];
+  }
+  return 0;
+}
 
 //variables and fuctions required for list command
 struct stat s;
@@ -247,10 +443,6 @@ int lsh_list(char **args)
 
   //Declare level
   int level = atoi(args[1]);
-  // printf("Enter the level to which you want to list files: ");
-
-  //Get the level from the user
-  // scanf("%d", &level);
 
   //Compile the regular expression
   reti = regcomp(&regex, expression, 0);
@@ -272,15 +464,23 @@ int lsh_list(char **args)
 
 int lsh_autoftp(char **args)
 {
-  FILE *pp;
-  pp = popen("./f.sh", "r");
-  if (pp != NULL)
+  //Declaring File Pointer
+  FILE *ftp;
+
+  //Opening the script in read mode
+  ftp = popen("./f.sh", "r");
+
+  if (ftp != NULL)
   {
     while (1)
     {
+
+      //Declaring variables
       char *line;
       char buf[1000];
-      line = fgets(buf, sizeof buf, pp);
+
+      //Get each line from the buffer string and store it in line
+      line = fgets(buf, sizeof buf, ftp);
       if (line == NULL)
       {
         break;
@@ -288,15 +488,17 @@ int lsh_autoftp(char **args)
       else
         printf("%s", line);
     }
-    pclose(pp);
+    pclose(ftp);
   }
   return 1;
 }
+
 /**
   @brief Launch a program and wait for it to terminate.
   @param args Null terminated list of arguments (including program).
   @return Always returns 1, to continue execution.
  */
+
 int lsh_copy(char **args)
 {
   char cwd[FILENAME_MAX];
@@ -338,36 +540,14 @@ int lsh_copy(char **args)
   }
   return 1;
 
-  // while(1){
-  // 	printf("Enter the filename to open for reading. Press \"quit\" to exit from reading \n");
-  // 	scanf("%s", filename);
-  //    strcpy(fileNamearray[counter], filename);
-
-  //    char filePath[sizeof(cwd) + 1 +sizeof(filename) + 1];
-  // 	strcpy(filePath,cwd);
-  // 	strcat(filePath,"/");
-  // 	strcat(filePath,filename);
-  // 	strcat(filePath,"\0");
-  // 	printf("%s\n",filePath);
-
-  // 	if (strcmp(filename,"quit") == 0)
-  // 	{
-  // 		break;
-
-  // 		printf("Cannot open file %s \n", filename);
-  // 		exit(0);
-  // 	}
-
-  // 	strcpy(filearray[counter], filePath);
-  // 	counter+=1;
-  // }
-  //  return 1;
 }
+
 /**
   @brief Launch a program and wait for it to terminate.
   @param args Null terminated list of arguments (including program).
   @return Always returns 1, to continue execution.
  */
+
 int lsh_paste(char **args)
 {
   for (int i = 0; i < counter; i++)
@@ -389,11 +569,200 @@ int lsh_paste(char **args)
   }
   return 1;
 }
+
 /**
   @brief Launch a program and wait for it to terminate.
   @param args Null terminated list of arguments (including program).
   @return Always returns 1, to continue execution.
  */
+
+int lsh_classify(char **args)
+{
+  if (args[1] == NULL) {
+    fprintf(stderr, "lsh: expected argument to \"classify\"\n");
+  } 
+  else {
+
+    //Declaring file pointers
+    FILE* inp;
+    FILE* a;
+    FILE* f;
+    FILE* au;
+
+    //filename of your data file
+    inp = fopen(args[1],"r");
+
+    //File to be compared
+    a = fopen("academic.txt","r");
+    f = fopen("finance.txt","r");
+    au = fopen("automobile.txt","r");
+
+    //max word length 50
+    char arr[50];
+    int i = 0,acount=-1,fcount=-1,amcount=-1;
+    while(1){
+      char r = (char)fgetc(inp);
+      int k = 0;
+      
+      //read till , or EOF
+      while(r!=' ' && !feof(inp)){
+        //store in array
+        arr[k++] = r;
+        r = (char)fgetc(inp);
+      }
+      
+      //make last character of string null
+      arr[k]=0;
+      insert(i,arr);
+
+      //check again for EOF
+      if(feof(inp)){
+        break;
+      }
+      
+      i++;
+    }
+
+    i=0;
+    
+    while(1){
+      char r = (char)fgetc(a);
+      int k = 0;
+      
+      while(r!=',' && !feof(a)){	//read till , or EOF
+        arr[k++] = r;		//store in array
+        r = (char)fgetc(a);
+      }
+      
+      arr[k]=0;		//make last character of string null
+      
+      inserta(i,arr); 
+      
+      if(feof(a)){		//check again for EOF
+        break;
+      }
+      i++;
+    }
+    
+    i=0;
+  
+    while(1){
+      char r = (char)fgetc(f);
+      int k = 0;
+      while(r!=',' && !feof(f)){	//read till , or EOF
+        arr[k++] = r;		//store in array
+        r = (char)fgetc(f);
+      }
+      
+      arr[k]=0;		//make last character of string null
+      insertf(i,arr); 
+      if(feof(f)){		//check again for EOF
+        break;
+      }
+      
+      i++;
+  }
+
+  i=0;
+
+    while(1){
+      char r = (char)fgetc(au);
+      int k = 0;
+      while(r!=',' && !feof(au)){	//read till , or EOF
+        arr[k++] = r;		//store in array
+        r = (char)fgetc(au);
+      }
+    
+      arr[k]=0;		//make last character of string null
+    
+      insertau(i,arr); 
+    
+      if(feof(au)){		//check again for EOF
+        break;
+      }
+      i++;
+    }
+    
+    fclose(inp);
+    fclose(a);
+    fclose(f);
+    fclose(au);
+    
+    i=0;
+    int j,l;
+    
+    for(j=0;j<SIZE;j++){
+      item = search(j);
+      if(item==NULL)
+      break;
+      for(l=0;l<SIZE;l++){
+        aca=searcha(l);
+        fin=searchf(l);
+        autom=searchau(l);
+        if(aca!=NULL){
+          if(strcmpi(item->data,aca->data)==0){
+            acount+=1;
+           }
+        }
+    
+        if(fin!=NULL){
+          if(strcmpi(item->data,fin->data)==0){
+            fcount+=1;
+          }
+        }
+        
+        if(autom!=NULL){
+          if(strcmpi(item->data,autom->data)==0){
+            amcount+=1;
+          }
+        }
+      }
+    }
+
+    char *source;
+    char dest1[100]="/home/cyberpunk/Desktop/project/academic";
+    char dest2[100]="/home/cyberpunk/Desktop/project/financial";
+    char dest3[100]="/home/cyberpunk/Desktop/project/automobile";
+    char *buf;
+    long size;
+    
+    size=pathconf(".",_PC_PATH_MAX);
+    
+    if((buf=(char *)malloc((size_t)size))!=NULL){
+        source=getcwd(buf,(size_t)size);
+    }
+
+    char b[100]="/";
+    strcat(b,args[1]);
+    strcat(source,b);
+    strcat(dest1,b);
+    strcat(dest2,b);
+    strcat(dest3,b);
+
+    if(acount>fcount&&acount>amcount){
+      printf("This is an academic file and has been moved to /home/cyberpunk/Desktop/project/academic\n");
+      rename(source,dest1);
+    }
+    else if(fcount>acount&&fcount>amcount){
+      printf("This is a financial file and has been moved to /home/cyberpunk/Desktop/project/financial\n");
+      rename(source,dest2);
+    }
+    else if(amcount>fcount&&amcount>acount){
+      printf("This is an automobile file and has been moved to /home/cyberpunk/Desktop/project/automobile\n");
+      rename(source,dest3);
+    }
+    else
+      printf("This file can't be classified\n");    
+  }
+  return 1;
+}
+
+/**
+  @brief Launch a program and wait for it to terminate.
+  @param args Null terminated list of arguments (including program).
+  @return Always returns 1, to continue execution.
+ */
+
 int lsh_launch(char **args)
 {
   pid_t pid;
