@@ -17,6 +17,7 @@ struct DataItem {
     char data[50];
     int key;
 };
+
 struct DataItem* hashArray[SIZE];
 struct DataItem* hashArraya[SIZE];
 struct DataItem* hashArrayf[SIZE];
@@ -25,10 +26,12 @@ struct DataItem* item;
 struct DataItem* aca;
 struct DataItem* fin;
 struct DataItem* autom;
+
 int hashCode(int key)
 {
     return key % SIZE;
 }
+
 struct DataItem* search(int key)
 {
     //get the hashindex for given key value
@@ -70,6 +73,7 @@ void insert(int key, char* data)
 
     hashArray[hashIndex] = item;
 }
+
 struct DataItem* searcha(int key)
 {
     //get the hashindex for given key value
@@ -90,6 +94,7 @@ struct DataItem* searcha(int key)
 
     return NULL;
 }
+
 struct DataItem* searchf(int key)
 {
     //get the hashindex for given key value
@@ -110,6 +115,7 @@ struct DataItem* searchf(int key)
 
     return NULL;
 }
+
 struct DataItem* searchau(int key)
 {
     //get the hashindex for given key value
@@ -130,6 +136,7 @@ struct DataItem* searchau(int key)
 
     return NULL;
 }
+
 void inserta(int key, char* data)
 {
     struct DataItem* item = (struct DataItem*)malloc(sizeof(struct DataItem));
@@ -150,6 +157,7 @@ void inserta(int key, char* data)
 
     hashArraya[hashIndex] = item;
 }
+
 void insertf(int key, char* data)
 {
     struct DataItem* item = (struct DataItem*)malloc(sizeof(struct DataItem));
@@ -170,6 +178,7 @@ void insertf(int key, char* data)
 
     hashArrayf[hashIndex] = item;
 }
+
 void insertau(int key, char* data)
 {
     struct DataItem* item = (struct DataItem*)malloc(sizeof(struct DataItem));
@@ -854,6 +863,7 @@ int lsh_execute(char **args)
 }
 
 #define LSH_RL_BUFSIZE 1024
+
 /**
 	 @brief Read a line of input from stdin.
 	 @return The line from stdin.
@@ -906,6 +916,7 @@ char *lsh_read_line(void)
 }
 
 #define LSH_TOK_BUFSIZE 64
+
 #define LSH_TOK_DELIM " \t\r\n\a"
 /**
 	 @brief Split a line into tokens (very naively).

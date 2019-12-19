@@ -8,7 +8,7 @@ pass
 ls
 cd ubuntu
 cd release
-lcd /home/cyberpunk/Desktop/project/new
+cd $PWD/Testing
 get robots.txt
 bye
 EOF
