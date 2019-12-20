@@ -212,6 +212,15 @@ int strcmpi(char* s1, char* s2)
     return 0;
 }
 
+void delete(){
+	int i;
+	for(i=0;i<SIZE;i++){
+		hashArray[i]=NULL;
+		hashArraya[i]=NULL;
+		hashArrayf[i]=NULL;
+		hashArrayau[i]=NULL;
+}}
+
 //variables and fuctions required for list command
 struct stat s;
 
@@ -795,6 +804,7 @@ int lsh_classify(char **args)
 		else
 			printf("This file can't be classified\n");    
 	}
+	delete();
 	return 1;
 }
 
